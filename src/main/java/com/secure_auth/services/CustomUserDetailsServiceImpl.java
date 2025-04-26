@@ -1,6 +1,5 @@
 package com.secure_auth.services;
 
-import com.secure_auth.configs.SecurityConfig;
 import com.secure_auth.entities.models.AppUser;
 import com.secure_auth.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +17,6 @@ import java.util.Collections;
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
-
-    private final SecurityConfig securityConfig;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
