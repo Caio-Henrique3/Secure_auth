@@ -20,12 +20,12 @@ spring:
       client:
         registration:
           azure:
-            client-id: {client_id}
-            client-secret: {client_secret}
+            client-id: ${client_id}
+            client-secret: ${client_secret}
             scope: openid, profile, email
             authorization-grant-type: authorization_code
-            redirect-uri: {redirect_uri}
+            redirect-uri: ${redirect_uri}
             client-name: Microsoft
         provider:
           azure:
-            issuer-uri: {issuer_uri}
+            issuer-uri: ${issuer_uri}
