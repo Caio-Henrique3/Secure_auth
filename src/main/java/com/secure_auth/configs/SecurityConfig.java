@@ -1,5 +1,8 @@
 package com.secure_auth.configs;
 
+import com.secure_auth.security.CustomAuthenticationSuccessHandler;
+import com.secure_auth.security.CustomLogoutSuccessHandler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -12,25 +15,19 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-//        return httpSecurity
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth ->
-//                        auth
-//                                .requestMatchers("/").permitAll()
-//                                .requestMatchers("/login").permitAll()
-//                                .requestMatchers("/user/create").permitAll()
-//                                .anyRequest().authenticated())
-//                .httpBasic(Customizer.withDefaults())
-//                .build();
-//    }
+    private final CorsConfig corsConfig;
+    private final CustomAuthenticationEntryPointConfig customAuthenticationEntryPointConfig;
+
+    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+                .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers ->
                         headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
@@ -39,12 +36,17 @@ public class SecurityConfig {
                                 .requestMatchers("/h2-console/**").permitAll()
                                 .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl("/", true)
+                        .successHandler(customAuthenticationSuccessHandler)
                 )
                 .logout(logout -> logout
+                        .logoutUrl("/logout")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler(customLogoutSuccessHandler.oidcLogoutSuccessHandler())
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(customAuthenticationEntryPointConfig)
                 )
                 .build();
     }
