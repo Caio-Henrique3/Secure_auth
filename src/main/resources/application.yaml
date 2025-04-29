@@ -29,3 +29,7 @@ spring:
         provider:
           azure:
             issuer-uri: ${issuer_uri}
+server:
+  servlet:
+    session:
+      timeout: 30s
